@@ -105,17 +105,50 @@ app.get("/async-books", async (req, res) => {
   setTimeout(() => res.json(books), 1000);
 });
 
-// Task 11-13: Fetch books using Axios (Simulated API calls)
-app.get("/fetch-books", async (req, res) => {
-  new Promise(async (resolve, rej) => {
-    try {
-      const response = await axios.get("https://api.example.com/books");
-      res.json(response.data);
-      resolve(true)
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching books" });
-      rej(error)
+// Task 10: Get all books using async callback function
+app.get("/async-books", async (req, res) => {
+  // Simulate async operation with setTimeout
+  setTimeout(() => {
+    res.json(books);
+  }, 1000);
+});
 
+// Task 11: Search by ISBN – Using Promises
+app.get("/books/isbn/:isbn", (req, res) => {
+  new Promise((resolve, reject) => {
+    const book = books.find((b) => b.isbn === req.params.isbn);
+    if (book) {
+      resolve(res.json(book));
+    } else {
+      reject(res.status(404).json({ message: "Book not found" }));
+    }
+  });
+});
+// Task 12: Search by Author
+app.get("/books/author/:author", (req, res) => {
+  new Promise((resolve, reject) => {
+    const filteredBooks = books.filter((b) => b.author === req.params.author);
+    if (filteredBooks.length > 0) {
+      resolve(res.json(filteredBooks));
+    } else {
+      reject(
+        res.status(404).json({ message: "No books found for this author" })
+      );
+    }
+  });
+});
+// Task 13: Search by Title
+app.get("/books/title/:title", (req, res) => {
+  new Promise((resolve, reject) => {
+    const filteredBooks = books.filter((b) =>
+      b.title.includes(req.params.title)
+    );
+    if (filteredBooks.length > 0) {
+      resolve(res.json(filteredBooks));
+    } else {
+      reject(
+        res.status(404).json({ message: "No books found with this title" })
+      );
     }
   });
 });
